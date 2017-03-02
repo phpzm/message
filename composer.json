@@ -1,0 +1,28 @@
+{
+  "name": "phpzm/message",
+  "description": "Package message",
+  "minimum-stability": "dev",
+  "keywords": [
+    "php",
+    "framework",
+    "api",
+    "simples"
+  ],
+  "homepage": "https://github.com/phpzm/message",
+  "license": "MIT",
+  "version": "0.1.2",
+  "type": "package",
+  "authors": [
+    {"name": "William", "email": "wilcorrea@gmail.com"},
+    {"name": "Ezio", "email": "ezioadsr@gmail.com"}
+  ],
+  "require": {
+    "php": ">=7.0",
+    "phpmailer/phpmailer": "^5.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Simples\\Message\\": "src/"
+    }
+  }
+}
