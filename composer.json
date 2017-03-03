@@ -10,15 +10,24 @@
   ],
   "homepage": "https://github.com/phpzm/message",
   "license": "MIT",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "type": "package",
   "authors": [
-    {"name": "William", "email": "wilcorrea@gmail.com"},
-    {"name": "Ezio", "email": "ezioadsr@gmail.com"}
+    {
+      "name": "William",
+      "email": "wilcorrea@gmail.com"
+    },
+    {
+      "name": "Ezio",
+      "email": "ezioadsr@gmail.com"
+    }
   ],
   "require": {
     "php": ">=7.0",
-    "phpmailer/phpmailer": "^5.2"
+    "phpzm/helper": "dev-master",
+    "phpzm/kernel": "dev-master",
+    "phpmailer/phpmailer": "^5.2",
+    "neitanod/forceutf8": "^2.0"
   },
   "autoload": {
     "psr-4": {

@@ -2,15 +2,15 @@
 
 namespace Simples\Message;
 
-use Simples\Core\Helper\File;
-use Simples\Core\Kernel\App;
+use Simples\Helper\File;
+use Simples\Kernel\App;
 
 /**
  * @method static string validation($i18, array $parameters = [])
  * @method static string auth($i18, array $parameters = [])
  *
  * Class Lang
- * @package Simples\Core\Kernel
+ * @package Simples\Kernel
  */
 abstract class Lang
 {

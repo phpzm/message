@@ -3,9 +3,9 @@
 namespace Simples\Message;
 
 use ForceUTF8\Encoding;
-use Simples\Core\Helper\File;
-use Simples\Core\Helper\JSON;
-use Simples\Core\Helper\Text;
+use Simples\Helper\File;
+use Simples\Helper\JSON;
+use Simples\Helper\Text;
 
 /**
  * Class Mail
