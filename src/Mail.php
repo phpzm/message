@@ -151,7 +151,7 @@ class Mail
         $mailer->setFrom($this->fromAddress, $this->fromName);
 
         if ($this->replyToAddress) {
-            $mailer->addReplyTo($this->replyToAddress, of($this->replyToName, ''));
+            $mailer->addReplyTo($this->replyToAddress, coalesce($this->replyToName, ''));
         }
 
         foreach ($this->ccs as $cc) {
