@@ -24,8 +24,8 @@
   ],
   "require": {
     "php": ">=7.0",
-    "phpzm/helper": "dev-master",
-    "phpzm/kernel": "dev-master",
+    "phpzm/helper": ">=1.0.3",
+    "phpzm/kernel": ">=1.0.4",
     "phpmailer/phpmailer": "^5.2",
     "neitanod/forceutf8": "^2.0"
   },
