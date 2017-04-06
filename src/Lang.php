@@ -7,7 +7,7 @@ use Simples\Kernel\App;
 
 /**
  * @method static string validation($i18, array $parameters = [])
- * @method static string auth($i18, array $parameters = [])
+ * @method static mixed auth($i18, array $parameters = [])
  *
  * Class Lang
  * @package Simples\Kernel

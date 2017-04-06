@@ -6,6 +6,7 @@ use ForceUTF8\Encoding;
 use Simples\Helper\File;
 use Simples\Helper\JSON;
 use Simples\Helper\Text;
+use PHPMailer;
 
 /**
  * Class Mail
@@ -93,8 +94,15 @@ class Mail
      * @param string $fromAddress
      * @param string $fromName
      */
-    public function __construct($subject = '', $message = '', $toAddress = '', $toName = '', $alt = '', $fromAddress = '', $fromName = '')
-    {
+    public function __construct(
+        $subject = '',
+        $message = '',
+        $toAddress = '',
+        $toName = '',
+        $alt = '',
+        $fromAddress = '',
+        $fromName = ''
+    ) {
         $this->subject = $subject;
         $this->message = $message;
         $this->toAddress = $toAddress;
@@ -108,8 +116,6 @@ class Mail
     /**
      * @param string $driver
      * @return bool
-     *
-     * @SuppressWarnings("CyclomaticComplexity")
      */
     public function send($driver = 'default'): bool
     {
@@ -127,7 +133,35 @@ class Mail
 
         $settings = off(config('mail'), $driver);
 
-        $mailer = new \PHPMailer();
+        $mailer = $this->create($settings);
+
+        $this->configureAddresses($mailer, $settings);
+
+        $this->configureMessage($mailer);
+
+        foreach ($this->attachments as $attachment) {
+            $mailer->addAttachment($attachment->filename, $attachment->description);
+        }
+
+        $filename = path($root, self::STATUS_SENT, $file);
+        $sent = $mailer->send();
+
+        if (!$sent) {
+            $filename = path($root, self::STATUS_ERROR, $file);
+            $this->error = $mailer->ErrorInfo;
+        }
+        File::write($filename, $this->json());
+
+        return $sent;
+    }
+
+    /**
+     * @param array $settings
+     * @return PHPMailer
+     */
+    private function create(array $settings)
+    {
+        $mailer = new PHPMailer();
 
         $mailer->isSMTP();
         $mailer->SMTPAuth = true;
@@ -138,6 +172,15 @@ class Mail
         $mailer->Username = off($settings, 'user');
         $mailer->Password = off($settings, 'password');
 
+        return $mailer;
+    }
+
+    /**
+     * @param PHPMailer $mailer
+     * @param array $settings
+     */
+    private function configureAddresses(PHPMailer $mailer, array $settings)
+    {
         $mailer->addAddress($this->toAddress, $this->toName ? $this->toName : '');
 
         if (!$this->fromAddress && !($this->fromAddress = off($settings, 'address'))) {
@@ -157,28 +200,18 @@ class Mail
         foreach ($this->ccs as $cc) {
             $mailer->addCC($cc->address, $cc->name);
         }
+    }
 
+    /**
+     * @param PHPMailer $mailer
+     */
+    private function configureMessage(PHPMailer $mailer)
+    {
         $mailer->isHTML(true);
 
         $mailer->Subject = Encoding::fixUTF8($this->subject);
         $mailer->Body = Encoding::fixUTF8(Text::replace($this->message, '{id}', $this->id));
         $mailer->AltBody = $this->alt;
-
-        foreach ($this->attachments as $attachment) {
-            $mailer->addAttachment($attachment->filename, $attachment->description);
-        }
-
-        $filename = path($root, self::STATUS_SENT, $file);
-        $sent = $mailer->send();
-
-        if (!$sent) {
-            $filename = path($root, self::STATUS_ERROR, $file);
-            $this->error = $mailer->ErrorInfo;
-        }
-
-        File::write($filename, $this->json());
-
-        return $sent;
     }
 
     /**
