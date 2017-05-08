@@ -2,12 +2,14 @@
 
 namespace Simples\Message;
 
+use Simples\Error\SimplesRunTimeError;
 use Simples\Helper\File;
+use Simples\Helper\Text;
 use Simples\Kernel\App;
 
 /**
- * @method static string validation($i18, array $parameters = [])
- * @method static mixed auth($i18, array $parameters = [])
+ * @method static string validation(string $i18, array $parameters = [])
+ * @method static string auth(string $i18, array $parameters = [])
  *
  * Class Lang
  * @package Simples\Kernel
@@ -15,35 +17,41 @@ use Simples\Kernel\App;
 abstract class Lang
 {
     /**
-     * @param $default
+     * @param string $default
      * @param string $fallback
      */
-    public static function locale($default, $fallback = '')
+    public static function locale(string $default, string $fallback = '')
     {
         App::options('lang', ['default' => $default, 'fallback' => $fallback]);
     }
 
     /**
-     * @param $name
-     * @param $arguments
+     * @param string $name
+     * @param string $arguments
      * @return string
+     * @throws SimplesRunTimeError
      */
     public static function __callStatic($name, $arguments)
     {
-        if (isset($arguments[1])) {
-            return self::lang($name, $arguments[0], $arguments[1]);
+        if (!isset($arguments[0])) {
+            throw new SimplesRunTimeError(
+                'Call static scope requires the same parameters what ' .
+                '`static::replace(string $scope, string $path, array $parameters = [])`'
+            );
         }
-        return self::lang($name, $arguments[0]);
+        $parameters = [];
+        if (isset($arguments[1])) {
+            $parameters = $arguments[1];
+        }
+        return static::replace($name, $arguments[0], $parameters);
     }
 
-
     /**
-     * @param $scope
-     * @param $path
-     * @param array $parameters
-     * @return string
+     * @param string $scope
+     * @param string $path
+     * @return mixed
      */
-    public static function lang($scope, $path, array $parameters = [])
+    public static function get(string $scope, string $path)
     {
         $i18n = "Lang '{$scope}.{$path}' not found";
         $languages = App::options('lang');
@@ -52,26 +60,35 @@ abstract class Lang
         if ($filename) {
             /** @noinspection PhpIncludeInspection */
             $phrases = include $filename;
-
             $i18n = search($phrases, $path);
-            if (gettype($i18n) === TYPE_STRING) {
-                return self::replace($i18n, $parameters);
-            }
         }
         return $i18n;
     }
 
     /**
-     * @param $i18n
-     * @param $parameters
-     * @return mixed
+     * @param string $scope
+     * @param string $path
+     * @param array $parameters
+     * @return string
+     * @throws SimplesRunTimeError
      */
-    public static function replace($i18n, $parameters)
+    public static function replace(string $scope, string $path, array $parameters = []): string
     {
-        foreach ($parameters as $key => $value) {
-            $i18n = str_replace('{' . $key . '}', parse($value), $i18n);
+        $i18n = static::get($scope, $path);
+        if (gettype($i18n) === TYPE_STRING) {
+            return static::replacement($i18n, $parameters);
         }
-        return $i18n;
+        throw new SimplesRunTimeError("Can't use `{$scope}` and `{$path}` to make replacement", $parameters);
+    }
+
+    /**
+     * @param string $i18n
+     * @param array $parameters
+     * @return string
+     */
+    public static function replacement(string $i18n, array $parameters): string
+    {
+        return Text::replacement($i18n, $parameters);
     }
 
     /**
