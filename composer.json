@@ -10,7 +10,7 @@
   ],
   "homepage": "https://github.com/phpzm/message",
   "license": "MIT",
-  "version": "1.5.18",
+  "version": "1.5.19",
   "type": "package",
   "authors": [
     {
@@ -24,8 +24,8 @@
   ],
   "require": {
     "php": ">=7.0",
-    "phpzm/helper": "^1.6.19",
-    "phpzm/kernel": "^1.11.12",
+    "phpzm/helper": "^1.6.20",
+    "phpzm/kernel": "^1.11.13",
     "phpmailer/phpmailer": "^5.2",
     "neitanod/forceutf8": "^2.0"
   },
